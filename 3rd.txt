@@ -1,0 +1,99 @@
+#include<stdio.h>
+struct process
+{
+	int processID;
+	int burstTime;
+	int arrivalTime;
+	int priority;
+	int waitTime;
+};
+int total_time,burst_time=0; //to calculate whole complete completion time and burst time
+int total=-1,i=-1; //to calcualte no of process entered in cpu and i to put result in cpu 
+/*to make buffer of queue in which process will be entered 
+and final process after completion to be entered in result of buffer 100;*/
+struct process queue[100],result[100],swap;
+//function to ask number of process to be created by user
+int process_create()
+{
+	int n;
+	printf("enter the number of process you want to enter:");
+	scanf("%d",&n);
+	return n;
+}
+//function to execute the process and finish it
+void execute()
+{
+	if(total>=0)
+	{
+		int wait,j;
+		//to increase the priority and decrease the burst time of priority in excecution
+		if(burst_time!=0 && queue[0].burstTime!=0)
+		{
+			queue[0].burstTime--;
+			burst_time--;
+			queue[0].priority++;
+			queue[0].arrivalTime=total_time+1;
+			total_time++;
+		//to increase the wait and priority of waiting process	
+			for(wait=1;wait<=total;wait++)
+			{
+				queue[wait].priority+=2;
+				queue[wait].waitTime=++queue[wait].waitTime;
+			}
+		}
+		//if process gets completed ,it is put in result queue
+		if(queue[0].burstTime==0)
+		{
+			i++;
+			result[i]=queue[0];
+			for(wait=0;wait<total;wait++)
+			{
+				queue[wait]=queue[wait+1];
+			}
+			total--;
+		}
+}
+}
+
+
+/*to give the process id,burst time,arrival time
+and sort the array according to arrival time and if arrival time is equal
+then sort according to burst time in main*/
+main()
+{
+	int l,j,n=process_create(),count=0;
+	float averageWaitTime=0;
+	struct process pcreate[n];
+	for(l=0;l<n;l++)
+	{
+		pcreate[l].processID=l+1;
+		printf("\nEnter the arrival time of process[%d]: ",l+1);
+		scanf("%d",&pcreate[l].arrivalTime);
+		printf("\nEnter the burst time of process[%d]: ",l+1);
+		scanf("%d",&pcreate[l].burstTime);
+		pcreate[l].priority=0;
+		pcreate[l].waitTime=0;
+		burst_time=burst_time+pcreate[l].burstTime;
+	}
+	for(l=0;l<n;l++)
+	{
+		for(j=0;j<n;j++)
+		{
+		if(pcreate[l].arrivalTime<pcreate[j].arrivalTime)
+		{
+			swap=pcreate[l];
+			pcreate[l]=pcreate[j];
+			pcreate[j]=swap;
+		}
+		if(pcreate[l].arrivalTime==pcreate[j].arrivalTime)
+		{
+			if(pcreate[l].burstTime<=pcreate[j].burstTime)
+			{
+			swap=pcreate[l];
+			pcreate[l]=pcreate[j];
+			pcreate[j]=swap;
+			}
+	 	}
+	    }
+}
+}	
